@@ -66,7 +66,13 @@ jobs:
           echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
           go build -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}.exe .
 
-          ls -al $OUTPUT_DIR/
+          ls -al $OUTPUT_DIR
+
+          # Create Checksumfile
+          cd $OUTPUT_DIR/
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
