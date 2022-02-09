@@ -1,0 +1,44 @@
+name: Build Release
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.1
+      - name: Build and create archives
+        run: |
+          export CGO_ENABLED=0
+          export OUTPUT_DIR=output
+
+          export APP_NAME="app-builder"
+          export VERSION=${{ github.event.release.tag_name }}
+
+          mkdir -p ${OUTPUT_DIR}
+
+          GOARCH=386   GOOS=linux   go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH} .
+          GOARCH=arm   GOOS=linux   go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH} .
+          GOARCH=amd64 GOOS=linux   go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH} .
+          GOARCH=arm64 GOOS=linux   go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH} .
+
+          GOARCH=amd64 GOOS=darwin  go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH} .
+          GOARCH=arm64 GOOS=darwin  go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH} .
+
+          GOARCH=386   GOOS=windows go build -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH}.exe .
+          GOARCH=amd64 GOOS=windows go build -o ${OUTPUT_DIR}/${APP_NAME}-${VERSION}-${GOOS}_${GOARCH}.exe .
+        shell: bash
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "output/*"
+          tag: ${{ github.ref }}
+          overwrite: true
+          file_glob: true
