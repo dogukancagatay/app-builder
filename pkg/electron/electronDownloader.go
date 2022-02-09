@@ -10,8 +10,8 @@ import (
 	"github.com/develar/app-builder/pkg/log"
 	"github.com/develar/app-builder/pkg/util"
 	"github.com/develar/errors"
-	"github.com/develar/go-fs-util"
-	"github.com/json-iterator/go"
+	fsutil "github.com/develar/go-fs-util"
+	jsoniter "github.com/json-iterator/go"
 	"go.uber.org/zap"
 )
 
@@ -95,9 +95,9 @@ func getBaseUrl(config *ElectronDownloadOptions) string {
 	}
 	if len(v) == 0 {
 		if strings.Contains(config.Version, "-nightly.") {
-			return "https://github.com/electron/nightlies/releases/download/v"
+			return "https://github.com/electron/nightlies/releases/download/"
 		} else {
-			return "https://github.com/electron/electron/releases/download/v"
+			return "https://github.com/electron/electron/releases/download/"
 		}
 	}
 	return v
@@ -109,7 +109,7 @@ func getMiddleUrl(config *ElectronDownloadOptions) string {
 		v = config.CustomDir
 	}
 	if len(v) == 0 {
-		v = config.Version
+		v = "v" + config.Version
 	}
 	return v
 }
