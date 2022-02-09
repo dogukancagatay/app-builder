@@ -62,7 +62,7 @@ jobs:
           echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
           go build -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}.exe .
 
-          export GOARCH=arm64
+          export GOARCH=386
           echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
           go build -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}.exe .
 
