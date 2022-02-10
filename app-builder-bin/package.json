@@ -1,6 +1,6 @@
 {
-  "name": "app-builder-bin",
-  "description": "app-builder precompiled binaries",
+  "name": "electron-app-builder-bin",
+  "description": "app-builder precompiled binaries compatible with @electron/get",
   "version": "4.1.0",
   "files": [
     "*.js",
@@ -10,7 +10,7 @@
     "index.d.ts"
   ],
   "license": "MIT",
-  "repository": "develar/app-builder",
+  "repository": "dogukancagatay/app-builder",
   "keywords": [
     "snap",
     "appimage",
