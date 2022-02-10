@@ -12,76 +12,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.1
-      - name: Build and create archives
-        shell: bash
-        run: |
-          export CGO_ENABLED=0
-          export OUTPUT_DIR=output
-
-          export APP_NAME="app-builder"
-          export APP_VERSION=${{ github.event.release.tag_name }}
-
-          mkdir -p $OUTPUT_DIR
-
-          # Linux
-          export GOOS=linux
-
-          export GOARCH=386
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH} .
-
-          export GOARCH=arm
-          export GOARM=7
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}v${GOARM} .
-
-          export GOARCH=amd64
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH} .
-
-          export GOARCH=arm64
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH} .
-
-          # MacOS
-          export GOOS=darwin
-
-          export GOARCH=amd64
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH} .
-
-          export GOARCH=arm64
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -ldflags='-s -w' -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH} .
-
-
-          # Windows
-          export GOOS=windows
-
-          export GOARCH=amd64
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}.exe .
-
-          export GOARCH=386
-          echo "Creating ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}"
-          go build -o ${OUTPUT_DIR}/${APP_NAME}-${APP_VERSION}-${GOOS}_${GOARCH}.exe .
-
-          ls -al $OUTPUT_DIR
-
-          # Create Checksumfile
-          cd $OUTPUT_DIR/
-          sha256sum * > SHA256SUMS
-          cat SHA256SUMS
-
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "output/*"
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
-
       - name: Build npm package binaries
         shell: bash
         run: ./scripts/build.sh
@@ -89,7 +19,9 @@ jobs:
         with:
           node-version: "16.0.1"
           registry-url: "https://registry.npmjs.org"
-      - run: npm ci
-      - run: npm publish
+      - run: |
+          mv .npmrc app-builder-bin/
+          cd app-builder-bin/
+          npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
